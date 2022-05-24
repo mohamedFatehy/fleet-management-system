@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CitiesController;
+use App\Http\Controllers\Api\TripsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,4 +21,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('cities/all',[CitiesController::class, 'get']);
 
+    Route::group(['prefix' => 'trips'], function () {
+        Route::get('/available', [TripsController::class, 'getAvailableTrips']);
+    });
 });
