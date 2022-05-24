@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 
 use App\Http\Controllers\ApiController;
+use App\Http\Requests\BookSeatRequest;
 use App\Http\Requests\GetAvailableSeatsRequest;
 use App\Http\Services\TripServiceInterface;
 use Illuminate\Http\JsonResponse;
@@ -25,5 +26,15 @@ class TripsController extends ApiController
     {
         $trips = $this->tripService->getAvailableTrips($request);
         return $this->handleResponse($trips);
+    }
+
+    /**
+     * @param BookSeatRequest $request
+     * @return JsonResponse
+     */
+    public function bookSeat(BookSeatRequest $request): JsonResponse
+    {
+        $this->tripService->bookSeat($request);
+        return $this->handleResponse([]);
     }
 }
