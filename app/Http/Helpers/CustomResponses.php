@@ -8,8 +8,8 @@ trait CustomResponses
     {
         $res = [
             'success' => true,
-            'data' => $result,
             'message' => $msg,
+            'data' => $result,
         ];
         return response()->json($res);
     }
