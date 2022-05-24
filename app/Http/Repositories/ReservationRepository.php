@@ -4,10 +4,22 @@ namespace App\Http\Repositories;
 
 
 use App\Models\Reservations;
+use App\Models\Trips;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ReservationRepository implements ReservationRepositoryInterface
 {
+
+    /**
+     * @param array $data
+     * @return void
+     */
+    public function create(array $data): void
+    {
+        Reservations::create($data);
+    }
 
     /**
      * @param int $tripId

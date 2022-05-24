@@ -2,7 +2,8 @@
 
 namespace App\Http\Services;
 
-
+use App\Exceptions\CustomValidationException;
+use App\Http\Constants\TripStatuses;
 use App\Http\Repositories\ReservationRepositoryInterface;
 use App\Http\Repositories\TripRepositoryInterface;
 use Illuminate\Http\Request;
@@ -46,6 +47,49 @@ class TripService implements TripServiceInterface
         return $trips;
     }
 
+    /**
+     * @param Request $request
+     * @return void
+     * @throws CustomValidationException
+     */
+    public function bookSeat(Request $request): void
+    {
+        $trip = $this->tripRepository->getTripBy($request->all());
+        $this->checkAndThrowException(!is_object($trip), 'seat is not available anymore');
+
+        // compare them against the all seats
+        $available_to_book = $this->isSeatAvailable($trip, $request->get('seatId'), $request->only(['from', 'to']));
+        $this->checkAndThrowException(!$available_to_book, 'seat is not available anymore');
+
+        // start reserving the seat
+        $this->reservationRepository->create($this->prepareReservationData($request, $trip->price));
+    }
+
+    /**
+     * @param bool $condition
+     * @param string $message
+     * @return void
+     * @throws CustomValidationException
+     */
+    private function checkAndThrowException(bool $condition, string $message): void
+    {
+        if ($condition) {
+            throw new CustomValidationException($message);
+        }
+    }
+
+    private function prepareReservationData(Request $request, $tripPrice): array
+    {
+        return [
+            'trip_id' => $request->get('tripId'),
+            'seat_id' => $request->get('seatId'),
+            'price' => $tripPrice,
+            'user_id' => $request->user()->id,
+            'status' => TripStatuses::CONFIRMED,
+            'from_city' => $request->get('from'),
+            'to_city' => $request->get('to')
+        ];
+    }
 
     /**
      * @param object $trip
