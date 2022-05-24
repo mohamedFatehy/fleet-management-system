@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('cities/all',[CitiesController::class, 'get']);
 
     Route::group(['prefix' => 'trips'], function () {
+        Route::post('/book', [TripsController::class, 'bookSeat']);
         Route::get('/available', [TripsController::class, 'getAvailableTrips']);
     });
 });
